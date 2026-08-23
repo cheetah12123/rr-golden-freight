@@ -1,33 +1,44 @@
 import os
-from flask import Flask, render_template, request, jsonify
-from openai import OpenAI
-from knowledge import COMPANY_DATA
+from flask import Flask, render_template, request, flash, redirect, url_for
 
 app = Flask(__name__)
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY", "sk-your-actual-api-key-here"))
+app.secret_key = 'supersecretkey'  # Flash messages ke liye zaroori hai
+
+# Sample rate estimation function (Aap ke pehle wale logic ke mutabiq)
+def calculate_rate(weight, volume, origin, destination):
+    base_rate = 100
+    weight_cost = float(weight) * 2.5
+    volume_cost = float(volume) * 1.5
+    
+    # Distance/Location multiplier
+    if origin.lower() != destination.lower():
+        location_multiplier = 1.2
+    else:
+        location_multiplier = 1.0
+        
+    total = (base_rate + weight_cost + volume_cost) * location_multiplier
+    return round(total, 2)
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
-@app.route('/ask', methods=['POST'])
-def ask_ai():
-    user_query = request.json.get('query', '').strip()
-    if not user_query:
-        return jsonify({"reply": "Please enter a valid question regarding our dispatch services."})
-    
-    try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": f"You are the official AI Dispatch Specialist for R AND R GOLDEN FREIGHT. Answer using this knowledge base: {COMPANY_DATA}."},
-                {"role": "user", "content": user_query}
-            ],
-            temperature=0.3
-        )
-        return jsonify({"reply": response.choices[0].message.content})
-    except Exception as e:
-        return jsonify({"reply": "AI service is initializing. Contact Zane Davis (+92 308 5294566) or Christian David (+92 309 7981886) directly via WhatsApp."})
+@app.route('/quote', methods=['POST'])
+def quote():
+    if request.method == 'POST':
+        try:
+            weight = request.form.get('weight', 0)
+            volume = request.form.get('volume', 0)
+            origin = request.form.get('origin', '')
+            destination = request.form.get('destination', '')
+            
+            estimated_cost = calculate_rate(weight, volume, origin, destination)
+            flash(f"Estimated Freight Cost: ${estimated_cost}", "success")
+        except Exception as e:
+            flash("Invalid input. Please check your numbers.", "danger")
+            
+        return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
