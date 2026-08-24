@@ -229,13 +229,10 @@
         function toggleServiceDetail(serviceKey) {
             var allContainers = document.getElementsByClassName('animated-detail-container');
             var allCards = document.getElementsByClassName('custom-card');
-            
             var targetContainer = document.getElementById('detail-' + serviceKey);
             var targetCard = document.getElementById('card-' + serviceKey);
-            
-            var isAlreadyOpen = targetContainer.classList.contains('show');
+            var isAlreadyOpen = targetContainer ? targetContainer.classList.contains('show') : false;
 
-            // Close all
             for (var i = 0; i < allContainers.length; i++) {
                 allContainers[i].classList.remove('show');
             }
@@ -243,7 +240,6 @@
                 allCards[j].classList.remove('active-card');
             }
 
-            // Open clicked if was closed
             if (!isAlreadyOpen && targetContainer) {
                 targetContainer.classList.add('show');
                 if(targetCard) targetCard.classList.add('active-card');
@@ -251,24 +247,60 @@
             }
         }
 
-        // AI Chat System
         function quickAsk(q) {
             document.getElementById('userInput').value = q;
             sendMsg();
         }
 
+        // Master Trucking & Dispatch Knowledge AI Engine
         function getAIDispatchReply(query) {
             let q = query.toLowerCase();
-            if (q.includes('equipment') || q.includes('truck') || q.includes('reefer') || q.includes('dry van')) {
-                return "We dispatch Dry Vans (53ft), Reefers (Temperature-Controlled), Flatbeds, Step Decks, Power Only, and Hotshots across all US states.";
-            } else if (q.includes('contact') || q.includes('zane') || q.includes('christian') || q.includes('whatsapp') || q.includes('number')) {
-                return "You can reach Co-Owner Zane Davis at +92 308 5294566 or Operations Director Christian David at +92 309 7981886 via WhatsApp directly!";
-            } else if (q.includes('back office') || q.includes('paperwork') || q.includes('billing') || q.includes('factoring')) {
-                return "Our back-office services cover Carrier Setup Packets, Rate Confirmations, Invoicing, Detention claims, and Factoring setup so you can focus on driving.";
-            } else if (q.includes('zip') || q.includes('location') || q.includes('where')) {
-                return "R AND R GOLDEN FREIGHT serves nationally across the US (Primary Zip Code: 35090).";
-            } else {
-                return "Thank you for reaching out to R AND R GOLDEN FREIGHT! For immediate high-paying load bookings, click the WhatsApp buttons to connect directly with Zane Davis (+92 308 5294566) or Christian David (+92 309 7981886).";
+
+            // 1. Equipment & Load Types
+            if (q.includes('flatbed') || q.includes('step deck') || q.includes('stepdeck') || q.includes('lowboy')) {
+                return "We have daily high-paying Flatbed, Step Deck, and Lowboy loads (Machinery, Steel, Lumber) with rates up to $3.00–$4.00+ per mile.";
+            } else if (q.includes('dry van') || q.includes('van') || q.includes('box truck') || q.includes('straight truck')) {
+                return "Dry Van & Box Truck loads are active 24/7 across all 48 states. We target high-density lanes to ensure minimal deadhead miles.";
+            } else if (q.includes('reefer') || q.includes('refrigerated') || q.includes('frozen') || q.includes('produce')) {
+                return "Reefer loads (Produce, Frozen Goods, Pharma) are available with premium rates. We ensure precise temp-monitoring requirements on rate confirmations.";
+            } else if (q.includes('power only') || q.includes('power-only') || q.includes('hotshot') || q.includes('car hauler')) {
+                return "Yes! We dispatch Power Only, Hotshots (26ft-40ft trailers), and Car Haulers across high-demand freight corridors.";
+            }
+
+            // 2. Rates, Payments & Factoring
+            else if (q.includes('rate') || q.includes('rpm') || q.includes('pay') || q.includes('gross') || q.includes('charge') || q.includes('fee') || q.includes('percentage')) {
+                return "We negotiate peak Rate Per Mile (RPM) with direct brokers. Our dispatch fee is low with zero hidden charges and strictly NO forced dispatch!";
+            } else if (q.includes('factoring') || q.includes('quick pay') || q.includes('noa') || q.includes('payment') || q.includes('fuel advance')) {
+                return "We process factoring setup, submit rate-cons & BOLs immediately upon delivery, and assist with Quick Pay & Fuel Advances so you get paid in 24 hours.";
+            }
+
+            // 3. Detention, TONU, Layover & Claims
+            else if (q.includes('detention') || q.includes('layover') || q.includes('tonu') || q.includes('lumper') || q.includes('claim')) {
+                return "We aggressively pursue Detention pay ($50-$75/hr after 2 hours), TONU ($150-$250), Layover pay ($250-$400/day), and Lumper reimbursement from brokers.";
+            }
+
+            // 4. Paperwork, Setup & Carrier Requirements
+            else if (q.includes('requirement') || q.includes('document') || q.includes('mc') || q.includes('dot') || q.includes('insurance') || q.includes('setup') || q.includes('w9') || q.includes('coi')) {
+                return "To start dispatching, you need: Active MC/DOT authority, COI ($100k Cargo / $1M Liability), W-9 form, and Notice of Assignment (NOA) for factoring.";
+            } else if (q.includes('bol') || q.includes('pod') || q.includes('rate con') || q.includes('rate-con') || q.includes('paperwork')) {
+                return "Our back-office team manages broker setup packets, verifies rate confirmations, tracks BOL/POD uploads, and manages invoicing.";
+            }
+
+            // 5. Compliance, ELD, HOS & Weight Limits
+            else if (q.includes('eld') || q.includes('hos') || q.includes('hours') || q.includes('log') || q.includes('weight') || q.includes('permit') || q.includes('scale')) {
+                return "We respect HOS (11-hour driving rule) and plan routes strictly around your ELD logs and gross vehicle weight limits (80,000 lbs max sans oversize permits).";
+            }
+
+            // 6. Contact & Direct Support
+            else if (q.includes('contact') || q.includes('zane') || q.includes('christian') || q.includes('whatsapp') || q.includes('number') || q.includes('phone') || q.includes('call') || q.includes('owner')) {
+                return "Direct WhatsApp contacts: Co-Owner Zane Davis (+92 308 5294566) & Operations Director Christian David (+92 309 7981886).";
+            } else if (q.includes('location') || q.includes('zip') || q.includes('state') || q.includes('where') || q.includes('lane') || q.includes('route')) {
+                return "We cover all 48 lower US states. Primary HQ Zip Code: 35090.";
+            }
+
+            // 7. General / Catch-All
+            else {
+                return "R AND R GOLDEN FREIGHT provides end-to-end dispatch: 24/7 load booking (Van/Reefer/Flatbed), top rate negotiation, paperwork, and Detention/TONU recovery. Chat with Zane (+92 308 5294566) or Christian (+92 309 7981886) on WhatsApp to get started!";
             }
         }
 
@@ -291,7 +323,7 @@
                 let reply = getAIDispatchReply(text);
                 chat.innerHTML += `<div class="mb-3 gold-text"><strong>AI Dispatcher:</strong> ${reply}</div>`;
                 chat.scrollTop = chat.scrollHeight;
-            }, 400);
+            }, 300);
         }
     </script>
 </body>
